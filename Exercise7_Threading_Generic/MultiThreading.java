@@ -1,0 +1,53 @@
+package practical;
+
+import java.util.concurrent.*;
+
+public class MultiThreading {
+
+    // 1) Extending Thread
+    static class MyThread extends Thread {
+        public void run() {
+        	System.out.println("REG NO : 2462602");
+            System.out.println("MyThread running: " +
+                    Thread.currentThread().getName());
+        }
+    }
+
+    // 2) Implementing Runnable
+    static class MyRunnable implements Runnable {
+        public void run() {
+            System.out.println("MyRunnable running: " +
+                    Thread.currentThread().getName());
+        }
+    }
+
+    public static void main(String[] args)
+            throws InterruptedException, ExecutionException {
+
+        // Using Thread subclass
+        Thread t1 = new MyThread();
+        t1.setName("Thread-Subclass");
+        t1.start();
+        t1.join();
+
+        // Using Runnable
+        Thread t2 = new Thread(new MyRunnable(), "Runnable-Thread");
+        t2.start();
+        t2.join();
+
+        // Using ExecutorService
+        ExecutorService pool = Executors.newFixedThreadPool(2);
+
+        Future<String> f = pool.submit(() -> {
+            return "Callable result from " +
+                    Thread.currentThread().getName();
+        });
+
+        System.out.println(f.get());
+
+        pool.shutdown();
+        pool.awaitTermination(3, TimeUnit.SECONDS);
+
+        System.out.println("Main finished.");
+    }
+}
